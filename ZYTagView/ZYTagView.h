@@ -16,5 +16,8 @@
 
 - (instancetype)initWithTagInfo:(ZYTagInfo *)tagInfo;
 - (void)updateTitle:(NSString *)title;
+- (void)showAnimation;
+- (void)closeAnimation;
+
 
 @end

@@ -18,6 +18,9 @@
 		C952511A1D9C014900B406F0 /* UIImageView+Tag.m in Sources */ = {isa = PBXBuildFile; fileRef = C95251151D9C014900B406F0 /* UIImageView+Tag.m */; };
 		C952511B1D9C014900B406F0 /* ZYTagInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = C95251171D9C014900B406F0 /* ZYTagInfo.m */; };
 		C952511C1D9C014900B406F0 /* ZYTagView.m in Sources */ = {isa = PBXBuildFile; fileRef = C95251191D9C014900B406F0 /* ZYTagView.m */; };
+		C952511F1D9C01EC00B406F0 /* X@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C952511D1D9C01EC00B406F0 /* X@2x.png */; };
+		C95251201D9C01EC00B406F0 /* X@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C952511E1D9C01EC00B406F0 /* X@3x.png */; };
+		C95251231D9C021100B406F0 /* UIView+zy_Frame.m in Sources */ = {isa = PBXBuildFile; fileRef = C95251221D9C021100B406F0 /* UIView+zy_Frame.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +63,10 @@
 		C95251171D9C014900B406F0 /* ZYTagInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZYTagInfo.m; sourceTree = "<group>"; };
 		C95251181D9C014900B406F0 /* ZYTagView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZYTagView.h; sourceTree = "<group>"; };
 		C95251191D9C014900B406F0 /* ZYTagView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZYTagView.m; sourceTree = "<group>"; };
+		C952511D1D9C01EC00B406F0 /* X@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "X@2x.png"; sourceTree = "<group>"; };
+		C952511E1D9C01EC00B406F0 /* X@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "X@3x.png"; sourceTree = "<group>"; };
+		C95251211D9C021100B406F0 /* UIView+zy_Frame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+zy_Frame.h"; sourceTree = "<group>"; };
+		C95251221D9C021100B406F0 /* UIView+zy_Frame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+zy_Frame.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,12 +160,16 @@
 		C95251131D9C012600B406F0 /* ZYTagView */ = {
 			isa = PBXGroup;
 			children = (
+				C952511D1D9C01EC00B406F0 /* X@2x.png */,
+				C952511E1D9C01EC00B406F0 /* X@3x.png */,
 				C95251141D9C014900B406F0 /* UIImageView+Tag.h */,
 				C95251151D9C014900B406F0 /* UIImageView+Tag.m */,
 				C95251161D9C014900B406F0 /* ZYTagInfo.h */,
 				C95251171D9C014900B406F0 /* ZYTagInfo.m */,
 				C95251181D9C014900B406F0 /* ZYTagView.h */,
 				C95251191D9C014900B406F0 /* ZYTagView.m */,
+				C95251211D9C021100B406F0 /* UIView+zy_Frame.h */,
+				C95251221D9C021100B406F0 /* UIView+zy_Frame.m */,
 			);
 			path = ZYTagView;
 			sourceTree = "<group>";
@@ -270,6 +281,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C95250F01D9C00BE00B406F0 /* LaunchScreen.storyboard in Resources */,
+				C952511F1D9C01EC00B406F0 /* X@2x.png in Resources */,
+				C95251201D9C01EC00B406F0 /* X@3x.png in Resources */,
 				C95250ED1D9C00BE00B406F0 /* Assets.xcassets in Resources */,
 				C95250EB1D9C00BE00B406F0 /* Main.storyboard in Resources */,
 			);
@@ -297,6 +310,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C952511C1D9C014900B406F0 /* ZYTagView.m in Sources */,
+				C95251231D9C021100B406F0 /* UIView+zy_Frame.m in Sources */,
 				C952511B1D9C014900B406F0 /* ZYTagInfo.m in Sources */,
 				C95250E81D9C00BE00B406F0 /* ViewController.m in Sources */,
 				C95250E51D9C00BE00B406F0 /* AppDelegate.m in Sources */,

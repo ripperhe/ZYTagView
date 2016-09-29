@@ -30,6 +30,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 @property (nonatomic, assign) ZYTagViewState state;
 @property (nonatomic, weak) CAShapeLayer *backLayer;
 @property (nonatomic, weak) CAShapeLayer *pointLayer;
+@property (nonatomic, weak) CAShapeLayer *pointShadowLayer;
 @property (nonatomic, weak) UILabel *titleLabel;
 @property (nonatomic, weak) UIButton *closeBtn;
 @property (nonatomic, weak) UIView *cuttingLine;
@@ -48,7 +49,6 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     if (self) {
         
         self.tagInfo = tagInfo;
-        
         //子控件
         [self createSubviews];
         //手势处理
@@ -71,10 +71,18 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 - (void)createSubviews
 {
     CAShapeLayer *backLayer = [[CAShapeLayer alloc] init];
+    backLayer.fillColor = [[UIColor blackColor] colorWithAlphaComponent:.7].CGColor;
     [self.layer addSublayer:backLayer];
     self.backLayer = backLayer;
     
+    CAShapeLayer *pointShadowLayer = [[CAShapeLayer alloc] init];
+    pointShadowLayer.hidden = YES;
+    pointShadowLayer.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.7].CGColor;;
+    [self.layer addSublayer:pointShadowLayer];
+    self.pointShadowLayer = pointShadowLayer;
+
     CAShapeLayer *pointLayer = [[CAShapeLayer alloc] init];
+    pointLayer.backgroundColor =[UIColor whiteColor].CGColor;
     [self.layer addSublayer:pointLayer];
     self.pointLayer = pointLayer;
     
@@ -149,6 +157,8 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     }else if (self.zy_y > (superview.zy_height - kYSpace - self.zy_height)){
         self.zy_y = superview.zy_height - kYSpace - self.zy_height;
     }
+    
+    //更新tag信息
     [self updateLocationInfoWithSuperview:superview];
 }
 
@@ -156,10 +166,15 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 {
     self.state = state;
 
-    CGFloat titleContentWidth = self.titleLabel.zy_width + kTagHorizontalSpace;
-    UIBezierPath *path = [UIBezierPath bezierPath];
-    UIBezierPath *pointPath = [UIBezierPath bezierPath];
+    //利用事务关闭隐式动画
+    [CATransaction setDisableActions:YES];
 
+    CGFloat titleContentWidth = self.titleLabel.zy_width + kTagHorizontalSpace;
+    UIBezierPath *backPath = [UIBezierPath bezierPath];
+    self.pointLayer.bounds = CGRectMake(0, 0, kPointWidth, kPointWidth);
+    self.pointLayer.cornerRadius = kPointWidth / 2.0;
+
+    
     if (state == ZYTagViewStateArrowLeft || state == ZYTagViewStateArrowRight) {
         self.zy_height = self.titleLabel.zy_height + kTagVerticalSpace;
         self.zy_width = titleContentWidth + kAngleLength + kPointWidth + kPointSpace;
@@ -181,14 +196,14 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         //根据字调整控件大小
         self.zy_x = arrowPoint.x - kPointWidth / 2.0;
         //背景
-        [path moveToPoint:CGPointMake(kPointWidth + kPointSpace, self.zy_height / 2.0)];
-        [path addLineToPoint:CGPointMake(kPointWidth + kPointSpace + kAngleLength, 0)];
-        [path addLineToPoint:CGPointMake(self.zy_width, 0)];
-        [path addLineToPoint:CGPointMake(self.zy_width, self.zy_height)];
-        [path addLineToPoint:CGPointMake(kPointWidth + kPointSpace + kAngleLength, self.zy_height)];
-        [path closePath];
+        [backPath moveToPoint:CGPointMake(kPointWidth + kPointSpace, self.zy_height / 2.0)];
+        [backPath addLineToPoint:CGPointMake(kPointWidth + kPointSpace + kAngleLength, 0)];
+        [backPath addLineToPoint:CGPointMake(self.zy_width, 0)];
+        [backPath addLineToPoint:CGPointMake(self.zy_width, self.zy_height)];
+        [backPath addLineToPoint:CGPointMake(kPointWidth + kPointSpace + kAngleLength, self.zy_height)];
+        [backPath closePath];
         //点
-        pointPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, self.zy_height/2.0 - kPointWidth/2.0, kPointWidth, kPointWidth) cornerRadius:kPointWidth/2.0];
+        self.pointLayer.position = CGPointMake(kPointWidth / 2.0, self.zy_height / 2.0);
         //标签
         self.titleLabel.center = CGPointMake(kAngleLength + kPointWidth + kPointSpace + titleContentWidth / 2.0, self.zy_height / 2.0);
 
@@ -202,15 +217,15 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         //根据字调整控件大小
         self.zy_right = arrowPoint.x + kPointWidth / 2.0;
         //背景
-        [path moveToPoint:CGPointMake(self.zy_width - kPointWidth - kPointSpace, self.zy_height / 2.0)];
-        [path addLineToPoint:CGPointMake(self.zy_width - kAngleLength - kPointWidth - kPointSpace, self.zy_height)];
-        [path addLineToPoint:CGPointMake(0, self.zy_height)];
-        [path addLineToPoint:CGPointMake(0, 0)];
-        [path addLineToPoint:CGPointMake(self.zy_width - kAngleLength - kPointWidth - kPointSpace, 0)];
-        [path closePath];
+        [backPath moveToPoint:CGPointMake(self.zy_width - kPointWidth - kPointSpace, self.zy_height / 2.0)];
+        [backPath addLineToPoint:CGPointMake(self.zy_width - kAngleLength - kPointWidth - kPointSpace, self.zy_height)];
+        [backPath addLineToPoint:CGPointMake(0, self.zy_height)];
+        [backPath addLineToPoint:CGPointMake(0, 0)];
+        [backPath addLineToPoint:CGPointMake(self.zy_width - kAngleLength - kPointWidth - kPointSpace, 0)];
+        [backPath closePath];
         //点
-        pointPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(self.zy_width - kPointWidth, self.zy_height/2.0 - kPointWidth/2.0, kPointWidth, kPointWidth) cornerRadius:kPointWidth/2.0];
-        
+        self.pointLayer.position = CGPointMake(self.zy_width - kPointWidth / 2.0, self.zy_height / 2.0);
+
         if (state == ZYTagViewStateArrowRight) {
             //标签
             self.titleLabel.center = CGPointMake(titleContentWidth / 2.0, self.zy_height / 2.0);
@@ -223,11 +238,12 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         }
     }
     
-    self.backLayer.path = path.CGPath;
-    self.backLayer.fillColor = [[UIColor blackColor] colorWithAlphaComponent:.7].CGColor;
-    self.pointLayer.path = pointPath.CGPath;
-    self.pointLayer.fillColor = [UIColor whiteColor].CGColor;
-    
+    self.backLayer.path = backPath.CGPath;
+    self.pointShadowLayer.bounds = self.pointLayer.bounds;
+    self.pointShadowLayer.position = self.pointLayer.position;
+    self.pointShadowLayer.cornerRadius = self.pointLayer.cornerRadius;
+
+    [CATransaction setDisableActions:NO];
 }
 
 - (void)changeLocationWithGestureState:(UIGestureRecognizerState)gestureState locationPoint:(CGPoint)point
@@ -282,7 +298,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         self.zy_y = referenceY;
     }
 
-    
+    //更新tag信息
     if (gestureState == UIGestureRecognizerStateEnded) {
         [self updateLocationInfoWithSuperview:self.superview];
     }
@@ -382,6 +398,33 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 - (void)updateTitle:(NSString *)title
 {
     [self layoutWithTitle:title superview:self.superview];
+}
+
+- (void)showAnimation
+{
+    CABasicAnimation *ai = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
+    ai.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
+    ai.duration = 1.3;
+    ai.repeatCount = CGFLOAT_MAX;
+    ai.fromValue = [NSNumber numberWithFloat:0.7];
+    ai.toValue = [NSNumber numberWithFloat:1.3];
+    [self.pointLayer addAnimation:ai forKey:@"ai"];
+    
+    CABasicAnimation *ai2 = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
+        ai.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
+    ai2.duration = 1.3;
+    ai2.repeatCount = CGFLOAT_MAX;
+    ai2.fromValue = [NSNumber numberWithFloat:0.9];
+    ai2.toValue = [NSNumber numberWithFloat:3.5];
+    self.pointShadowLayer.hidden = NO;
+    [self.pointShadowLayer addAnimation:ai2 forKey:@"ai2"];
+}
+
+- (void)closeAnimation
+{
+    [self.pointLayer removeAnimationForKey:@"ai"];
+    [self.pointShadowLayer removeAnimationForKey:@"ai2"];
+    self.pointShadowLayer.hidden = YES;
 }
 
 @end
