@@ -25,7 +25,7 @@
     tagInfo.title = title;
     ZYTagView *tagView = [[ZYTagView alloc] initWithTagInfo:tagInfo];
     [self addSubview:tagView];
-    [tagView showAnimation];
+    [tagView showAnimationWithRepeatCount:3];
 }
 
 - (void)removeAllTags
@@ -37,7 +37,7 @@
     }
 }
 
-- (NSArray *)getAllTagInfo
+- (NSArray *)getAllTagInfos
 {
     NSMutableArray *array = [NSMutableArray array];
     for (UIView *view in self.subviews) {

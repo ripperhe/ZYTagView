@@ -11,10 +11,13 @@
 
 @interface UIImageView (Tag)
 
+/** 添加标签 */
 - (void)addTagsWithTagInfoArray:(NSArray *)tagInfoArray;
+/** 添加单个标签 */
 - (void)addTagWithTitle:(NSString *)title point:(CGPoint)point;
+/** 移除所有标签 */
 - (void)removeAllTags;
-- (NSArray *)getAllTagInfo;
-
+/** 获取当前所有标签信息 */
+- (NSArray *)getAllTagInfos;
 
 @end

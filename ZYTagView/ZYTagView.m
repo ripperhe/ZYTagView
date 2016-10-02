@@ -9,34 +9,45 @@
 #import "ZYTagView.h"
 #import "UIView+zy_Frame.h"
 
-#define kXSpace 8.0
-#define kYSpace 0.0
-#define kTagHorizontalSpace 20.0
-#define kTagVerticalSpace 10.0
-#define kPointWidth 8.0
-#define kPointSpace 2.0
-#define kAngleLength (self.zy_height / 2.0 - 2)
-#define kCloseBtnWidth self.zy_height
+#define kXSpace 8.0                              /** 距离父视图边界横向最小距离 */
+#define kYSpace 0.0                              /** 距离俯视图边界纵向最小距离 */
+#define kTagHorizontalSpace 20.0                 /** 标签左右空余距离 */
+#define kTagVerticalSpace 10.0                   /** 标签上下空余距离 */
+#define kPointWidth 8.0                          /** 白点直径 */
+#define kPointSpace 2.0                          /** 白点和阴影尖角距离 */
+#define kAngleLength (self.zy_height / 2.0 - 2)  /** 黑色阴影尖交宽度 */
+#define kDeleteBtnWidth self.zy_height           /** 删除按钮宽度 */
 
 typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     ZYTagViewStateArrowLeft,
     ZYTagViewStateArrowRight,
-    ZYTagViewStateArrowLeftWithClose,
-    ZYTagViewStateArrowRightWithClose,
+    ZYTagViewStateArrowLeftWithDelete,
+    ZYTagViewStateArrowRightWithDelete,
 };
 
 @interface ZYTagView ()
 
+/** 状态 */
 @property (nonatomic, assign) ZYTagViewState state;
-@property (nonatomic, weak) CAShapeLayer *backLayer;
-@property (nonatomic, weak) CAShapeLayer *pointLayer;
-@property (nonatomic, weak) CAShapeLayer *pointShadowLayer;
-@property (nonatomic, weak) UILabel *titleLabel;
-@property (nonatomic, weak) UIButton *closeBtn;
-@property (nonatomic, weak) UIView *cuttingLine;
-
+/** tag信息 */
 @property (nonatomic, strong) ZYTagInfo *tagInfo;
+/** 拖动手势记录初始点 */
 @property (nonatomic, assign) CGPoint panTmpPoint;
+/** 白点中心 */
+@property (nonatomic, assign, readonly) CGPoint arrowPoint;
+
+/** 黑色背景 */
+@property (nonatomic, weak) CAShapeLayer *backLayer;
+/** 白点 */
+@property (nonatomic, weak) CAShapeLayer *pointLayer;
+/** 白点动画阴影 */
+@property (nonatomic, weak) CAShapeLayer *pointShadowLayer;
+/** 标题 */
+@property (nonatomic, weak) UILabel *titleLabel;
+/** 删除按钮 */
+@property (nonatomic, weak) UIButton *deleteBtn;
+/** 分割线 */
+@property (nonatomic, weak) UIView *cuttingLine;
 
 @end
 
@@ -67,6 +78,22 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 }
 
 
+#pragma mark - getter
+- (CGPoint)arrowPoint
+{
+    CGPoint arrowPoint;
+    if (self.state == ZYTagViewStateArrowLeft) {
+        arrowPoint = CGPointMake(self.zy_x + kPointWidth / 2.0, self.zy_centerY);
+    }else if (self.state == ZYTagViewStateArrowRight) {
+        arrowPoint = CGPointMake(self.zy_right - kPointWidth / 2.0, self.zy_centerY);
+    }else if (self.state == ZYTagViewStateArrowLeftWithDelete) {
+        arrowPoint = CGPointMake(self.zy_x + kPointWidth / 2.0, self.zy_centerY);
+    }else if(self.state == ZYTagViewStateArrowRightWithDelete) {
+        arrowPoint = CGPointMake(self.zy_right - kPointWidth / 2.0, self.zy_centerY);
+    }
+    return arrowPoint;
+}
+
 #pragma mark - private methods
 - (void)createSubviews
 {
@@ -90,11 +117,11 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     [self addSubview:titleLabel];
     self.titleLabel = titleLabel;
     
-    UIButton *closeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [closeBtn addTarget:self action:@selector(clickCloseBtn) forControlEvents:UIControlEventTouchUpInside];
-    [closeBtn setImage:[UIImage imageNamed:@"discover_tag_close"] forState:UIControlStateNormal];
-    [self addSubview:closeBtn];
-    self.closeBtn = closeBtn;
+    UIButton *deleteBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [deleteBtn addTarget:self action:@selector(clickDeleteBtn) forControlEvents:UIControlEventTouchUpInside];
+    [deleteBtn setImage:[UIImage imageNamed:@"X"] forState:UIControlStateNormal];
+    [self addSubview:deleteBtn];
+    self.deleteBtn = deleteBtn;
     
     UIView *cuttingLine = [[UIView alloc] init];
     cuttingLine.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:.5];
@@ -106,8 +133,10 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 {
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
     [self addGestureRecognizer:tap];
+    
     UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
     [self addGestureRecognizer:pan];
+    
     UILongPressGestureRecognizer *lop = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self addGestureRecognizer:lop];
 }
@@ -118,7 +147,10 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     self.titleLabel.font = [UIFont systemFontOfSize:12];
     self.titleLabel.textColor = [UIColor whiteColor];
     self.titleLabel.text = title;
+    self.titleLabel.textAlignment = NSTextAlignmentCenter;
     [self.titleLabel sizeToFit];
+    self.titleLabel.zy_width += kTagHorizontalSpace;
+    self.titleLabel.zy_height += kTagVerticalSpace;
     
     //调整子控件UI
     ZYTagViewState state = self.state;
@@ -169,30 +201,29 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     //利用事务关闭隐式动画
     [CATransaction setDisableActions:YES];
 
-    CGFloat titleContentWidth = self.titleLabel.zy_width + kTagHorizontalSpace;
     UIBezierPath *backPath = [UIBezierPath bezierPath];
     self.pointLayer.bounds = CGRectMake(0, 0, kPointWidth, kPointWidth);
     self.pointLayer.cornerRadius = kPointWidth / 2.0;
+    self.zy_height = self.titleLabel.zy_height;
+    self.zy_centerY = arrowPoint.y;
+    self.titleLabel.zy_y = 0;
 
     
     if (state == ZYTagViewStateArrowLeft || state == ZYTagViewStateArrowRight) {
-        self.zy_height = self.titleLabel.zy_height + kTagVerticalSpace;
-        self.zy_width = titleContentWidth + kAngleLength + kPointWidth + kPointSpace;
-        self.zy_centerY = arrowPoint.y;
+        //无关闭按钮
+        self.zy_width = self.titleLabel.zy_width + kAngleLength + kPointWidth + kPointSpace;
         //隐藏关闭及分割线
-        self.closeBtn.hidden = YES;
+        self.deleteBtn.hidden = YES;
         self.cuttingLine.hidden = YES;
     }else{
         //有关闭按钮
-        self.zy_height = self.titleLabel.zy_height + kTagVerticalSpace;
-        self.zy_width = titleContentWidth + kAngleLength + kPointWidth + kPointSpace +kCloseBtnWidth;
-        self.zy_centerY = arrowPoint.y;
+        self.zy_width = self.titleLabel.zy_width + kAngleLength + kPointWidth + kPointSpace +kDeleteBtnWidth;
         //关闭按钮
-        self.closeBtn.hidden = NO;
+        self.deleteBtn.hidden = NO;
         self.cuttingLine.hidden = NO;
     }
 
-    if (state == ZYTagViewStateArrowLeft || state == ZYTagViewStateArrowLeftWithClose) {
+    if (state == ZYTagViewStateArrowLeft || state == ZYTagViewStateArrowLeftWithDelete) {
         //根据字调整控件大小
         self.zy_x = arrowPoint.x - kPointWidth / 2.0;
         //背景
@@ -205,15 +236,15 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         //点
         self.pointLayer.position = CGPointMake(kPointWidth / 2.0, self.zy_height / 2.0);
         //标签
-        self.titleLabel.center = CGPointMake(kAngleLength + kPointWidth + kPointSpace + titleContentWidth / 2.0, self.zy_height / 2.0);
+        self.titleLabel.zy_x = kPointWidth + kAngleLength;
 
-        if (state == ZYTagViewStateArrowLeftWithClose) {
+        if (state == ZYTagViewStateArrowLeftWithDelete) {
             //关闭
-            self.closeBtn.frame = CGRectMake(self.zy_width - kCloseBtnWidth, 0, kCloseBtnWidth, kCloseBtnWidth);
-            self.cuttingLine.frame = CGRectMake(self.closeBtn.zy_x - 0.5, 0, 0.5, self.zy_height);
+            self.deleteBtn.frame = CGRectMake(self.zy_width - kDeleteBtnWidth, 0, kDeleteBtnWidth, kDeleteBtnWidth);
+            self.cuttingLine.frame = CGRectMake(self.deleteBtn.zy_x - 0.5, 0, 0.5, self.zy_height);
         }
         
-    }else if(state == ZYTagViewStateArrowRight || state == ZYTagViewStateArrowRightWithClose) {
+    }else if(state == ZYTagViewStateArrowRight || state == ZYTagViewStateArrowRightWithDelete) {
         //根据字调整控件大小
         self.zy_right = arrowPoint.x + kPointWidth / 2.0;
         //背景
@@ -228,13 +259,13 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 
         if (state == ZYTagViewStateArrowRight) {
             //标签
-            self.titleLabel.center = CGPointMake(titleContentWidth / 2.0, self.zy_height / 2.0);
+            self.titleLabel.zy_x = 0;
         }else{
             //标签
-            self.titleLabel.center = CGPointMake(kCloseBtnWidth + titleContentWidth / 2.0, self.zy_height / 2.0);
+            self.titleLabel.zy_x = kDeleteBtnWidth;
             //关闭
-            self.closeBtn.frame = CGRectMake(0, 0, kCloseBtnWidth, kCloseBtnWidth);
-            self.cuttingLine.frame = CGRectMake(self.closeBtn.zy_right + 0.5, 0, 0.5, self.zy_height);
+            self.deleteBtn.frame = CGRectMake(0, 0, kDeleteBtnWidth, kDeleteBtnWidth);
+            self.cuttingLine.frame = CGRectMake(self.deleteBtn.zy_right + 0.5, 0, 0.5, self.zy_height);
         }
     }
     
@@ -253,7 +284,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         CGFloat referenceX = point.x;
         if (referenceX < kXSpace) {
             self.zy_x = kXSpace;
-        }else if (referenceX > self.superview.zy_width - kXSpace - self.zy_width - kCloseBtnWidth){
+        }else if (referenceX > self.superview.zy_width - kXSpace - self.zy_width - kDeleteBtnWidth){
             
             if (referenceX < self.superview.zy_width - kXSpace - kPointWidth) {
                 self.zy_x = referenceX;
@@ -271,11 +302,16 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     }else{
         CGFloat referenceX = point.x;
 
-        if (referenceX < kXSpace + kCloseBtnWidth) {
+        if (referenceX < kXSpace + kDeleteBtnWidth) {
             if (referenceX < kXSpace + kPointWidth - self.zy_width) {
                 self.zy_x = kXSpace + kPointWidth - self.zy_width;
             }else{
-                self.zy_x = referenceX;
+                if (referenceX > self.superview.zy_width - kXSpace - self.zy_width) {
+                    //兼容标签比父视图还宽的情况
+                    self.zy_right = self.superview.zy_width - kXSpace;
+                }else{
+                    self.zy_x = referenceX;
+                }
             }
             //翻转
             if (gestureState == UIGestureRecognizerStateEnded) {
@@ -311,7 +347,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         return;
     }
     //更新point
-    if (self.state == ZYTagViewStateArrowLeft || self.state == ZYTagViewStateArrowLeftWithClose) {
+    if (self.state == ZYTagViewStateArrowLeft || self.state == ZYTagViewStateArrowLeftWithDelete) {
         self.tagInfo.point = CGPointMake(self.zy_x + kPointWidth / 2, self.zy_y + self.zy_height / 2.0);
     }else{
         self.tagInfo.point = CGPointMake(self.zy_right - kPointWidth / 2, self.zy_y + self.zy_height / 2.0);
@@ -322,24 +358,12 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     }
 }
 
-
 #pragma mark - event response
 - (void)handleTapGesture:(UITapGestureRecognizer *)tap
 {
     if (tap.state == UIGestureRecognizerStateEnded) {
-        if (self.state == ZYTagViewStateArrowLeft) {
-            CGPoint arrowPoint = CGPointMake(self.zy_x + kPointWidth / 2.0, self.zy_centerY);
-            [self layoutSubviewsWithState:ZYTagViewStateArrowLeftWithClose arrowPoint:arrowPoint];
-        }else if (self.state == ZYTagViewStateArrowRight) {
-            CGPoint arrowPoint = CGPointMake(self.zy_right - kPointWidth / 2.0, self.zy_centerY);
-            [self layoutSubviewsWithState:ZYTagViewStateArrowRightWithClose arrowPoint:arrowPoint];
-        }else if (self.state == ZYTagViewStateArrowLeftWithClose) {
-            CGPoint arrowPoint = CGPointMake(self.zy_x + kPointWidth / 2.0, self.zy_centerY);
-            [self layoutSubviewsWithState:ZYTagViewStateArrowLeft arrowPoint:arrowPoint];
-        }else if(self.state == ZYTagViewStateArrowRightWithClose) {
-            CGPoint arrowPoint = CGPointMake(self.zy_right - kPointWidth / 2.0, self.zy_centerY);
-            [self layoutSubviewsWithState:ZYTagViewStateArrowRight arrowPoint:arrowPoint];
-        }
+        [self switchDeleteState];
+        [self.superview bringSubviewToFront:self];
     }
 }
 
@@ -350,14 +374,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     switch (pan.state) {
         case UIGestureRecognizerStateBegan:
         {
-            //除去关闭按钮
-            if (self.state == ZYTagViewStateArrowLeftWithClose) {
-                CGPoint arrowPoint = CGPointMake(self.zy_x + kPointWidth / 2.0, self.zy_centerY);
-                [self layoutSubviewsWithState:ZYTagViewStateArrowLeft arrowPoint:arrowPoint];
-            }else if(self.state == ZYTagViewStateArrowRightWithClose) {
-                CGPoint arrowPoint = CGPointMake(self.zy_right - kPointWidth / 2.0, self.zy_centerY);
-                [self layoutSubviewsWithState:ZYTagViewStateArrowRight arrowPoint:arrowPoint];
-            }
+            [self hiddenDeleteBtn];
             [self.superview bringSubviewToFront:self];
             self.panTmpPoint = [pan locationInView:self];
         }
@@ -383,17 +400,12 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)lop
 {
     if (lop.state == UIGestureRecognizerStateBegan) {
-        if (self.state == ZYTagViewStateArrowLeft) {
-            CGPoint arrowPoint = CGPointMake(self.zy_x + kPointWidth / 2.0, self.zy_centerY);
-            [self layoutSubviewsWithState:ZYTagViewStateArrowLeftWithClose arrowPoint:arrowPoint];
-        }else if (self.state == ZYTagViewStateArrowRight) {
-            CGPoint arrowPoint = CGPointMake(self.zy_right - kPointWidth / 2.0, self.zy_centerY);
-            [self layoutSubviewsWithState:ZYTagViewStateArrowRightWithClose arrowPoint:arrowPoint];
-        }
+        [self showDeleteBtn];
+        [self.superview bringSubviewToFront:self];
     }
 }
 
-- (void)clickCloseBtn
+- (void)clickDeleteBtn
 {
     [self removeFromSuperview];
 }
@@ -404,29 +416,56 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     [self layoutWithTitle:title superview:self.superview];
 }
 
-- (void)showAnimation
+- (void)showAnimationWithRepeatCount:(float)repeatCount
 {
     CAKeyframeAnimation *cka = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
-    cka.values = @[@0.7, @1.32, @1, @1];
-    cka.keyTimes = @[@0.0, @0.3, @0.3, @1];
-    cka.repeatCount = 2;
+    cka.values =   @[@0.7, @1.32, @1,   @1];
+    cka.keyTimes = @[@0.0, @0.3,  @0.3, @1];
+    cka.repeatCount = repeatCount;
     cka.duration = 1.8;
     [self.pointLayer addAnimation:cka forKey:@"cka"];
     
     CAKeyframeAnimation *cka2 = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
-    cka2.values = @[@0.7, @0.9, @0.9, @3.5, @0.9, @3.5];
+    cka2.values =   @[@0.7, @0.9, @0.9, @3.5,  @0.9,  @3.5];
     cka2.keyTimes = @[@0.0, @0.3, @0.3, @0.65, @0.65, @1];
-    cka2.repeatCount = 2;
+    cka2.repeatCount = repeatCount;
     cka2.duration = 1.8;
     self.pointShadowLayer.hidden = NO;
     [self.pointShadowLayer addAnimation:cka2 forKey:@"cka2"];
 }
 
-- (void)closeAnimation
+- (void)removeAnimation
 {
     [self.pointLayer removeAnimationForKey:@"cka"];
     [self.pointShadowLayer removeAnimationForKey:@"cka2"];
     self.pointShadowLayer.hidden = YES;
+}
+
+- (void)showDeleteBtn
+{
+    if (self.state == ZYTagViewStateArrowLeft) {
+        [self layoutSubviewsWithState:ZYTagViewStateArrowLeftWithDelete arrowPoint:self.arrowPoint];
+    }else if (self.state == ZYTagViewStateArrowRight) {
+        [self layoutSubviewsWithState:ZYTagViewStateArrowRightWithDelete arrowPoint:self.arrowPoint];
+    }
+}
+
+- (void)hiddenDeleteBtn
+{
+    if (self.state == ZYTagViewStateArrowLeftWithDelete) {
+        [self layoutSubviewsWithState:ZYTagViewStateArrowLeft arrowPoint:self.arrowPoint];
+    }else if(self.state == ZYTagViewStateArrowRightWithDelete) {
+        [self layoutSubviewsWithState:ZYTagViewStateArrowRight arrowPoint:self.arrowPoint];
+    }
+}
+
+- (void)switchDeleteState
+{
+    if (self.state == ZYTagViewStateArrowLeft || self.state == ZYTagViewStateArrowRight) {
+        [self showDeleteBtn];
+    }else {
+        [self hiddenDeleteBtn];
+    }
 }
 
 @end
