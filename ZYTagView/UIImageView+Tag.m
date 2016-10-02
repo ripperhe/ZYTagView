@@ -26,10 +26,6 @@
     ZYTagView *tagView = [[ZYTagView alloc] initWithTagInfo:tagInfo];
     [self addSubview:tagView];
     [tagView showAnimation];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [tagView closeAnimation];
-    });
 }
 
 - (void)removeAllTags

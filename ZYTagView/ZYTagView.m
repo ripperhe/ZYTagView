@@ -9,7 +9,7 @@
 #import "ZYTagView.h"
 #import "UIView+zy_Frame.h"
 
-#define kXSpace 10.0
+#define kXSpace 8.0
 #define kYSpace 0.0
 #define kTagHorizontalSpace 20.0
 #define kTagVerticalSpace 10.0
@@ -77,7 +77,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     
     CAShapeLayer *pointShadowLayer = [[CAShapeLayer alloc] init];
     pointShadowLayer.hidden = YES;
-    pointShadowLayer.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.7].CGColor;;
+    pointShadowLayer.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.3].CGColor;;
     [self.layer addSublayer:pointShadowLayer];
     self.pointShadowLayer = pointShadowLayer;
 
@@ -92,7 +92,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     
     UIButton *closeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [closeBtn addTarget:self action:@selector(clickCloseBtn) forControlEvents:UIControlEventTouchUpInside];
-    [closeBtn setImage:[UIImage imageNamed:@"X"] forState:UIControlStateNormal];
+    [closeBtn setImage:[UIImage imageNamed:@"discover_tag_close"] forState:UIControlStateNormal];
     [self addSubview:closeBtn];
     self.closeBtn = closeBtn;
     
@@ -306,11 +306,15 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 
 - (void)updateLocationInfoWithSuperview:(UIView *)superview
 {
+    if (superview == nil) {
+        //被移除的时候也会调用 willMoveToSuperview
+        return;
+    }
     //更新point
     if (self.state == ZYTagViewStateArrowLeft || self.state == ZYTagViewStateArrowLeftWithClose) {
-        self.tagInfo.point = CGPointMake(self.zy_x, self.zy_height / 2.0);
+        self.tagInfo.point = CGPointMake(self.zy_x + kPointWidth / 2, self.zy_y + self.zy_height / 2.0);
     }else{
-        self.tagInfo.point = CGPointMake(self.zy_right, self.zy_height / 2.0);
+        self.tagInfo.point = CGPointMake(self.zy_right - kPointWidth / 2, self.zy_y + self.zy_height / 2.0);
     }
     //更新proportion
     if (superview.zy_width > 0 && superview.zy_height > 0) {
@@ -378,7 +382,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)lop
 {
-    if (lop.state == UIGestureRecognizerStateEnded) {
+    if (lop.state == UIGestureRecognizerStateBegan) {
         if (self.state == ZYTagViewStateArrowLeft) {
             CGPoint arrowPoint = CGPointMake(self.zy_x + kPointWidth / 2.0, self.zy_centerY);
             [self layoutSubviewsWithState:ZYTagViewStateArrowLeftWithClose arrowPoint:arrowPoint];
@@ -402,28 +406,26 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 
 - (void)showAnimation
 {
-    CABasicAnimation *ai = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
-    ai.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
-    ai.duration = 1.3;
-    ai.repeatCount = CGFLOAT_MAX;
-    ai.fromValue = [NSNumber numberWithFloat:0.7];
-    ai.toValue = [NSNumber numberWithFloat:1.3];
-    [self.pointLayer addAnimation:ai forKey:@"ai"];
+    CAKeyframeAnimation *cka = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
+    cka.values = @[@0.7, @1.32, @1, @1];
+    cka.keyTimes = @[@0.0, @0.3, @0.3, @1];
+    cka.repeatCount = 2;
+    cka.duration = 1.8;
+    [self.pointLayer addAnimation:cka forKey:@"cka"];
     
-    CABasicAnimation *ai2 = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
-        ai.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
-    ai2.duration = 1.3;
-    ai2.repeatCount = CGFLOAT_MAX;
-    ai2.fromValue = [NSNumber numberWithFloat:0.9];
-    ai2.toValue = [NSNumber numberWithFloat:3.5];
+    CAKeyframeAnimation *cka2 = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
+    cka2.values = @[@0.7, @0.9, @0.9, @3.5, @0.9, @3.5];
+    cka2.keyTimes = @[@0.0, @0.3, @0.3, @0.65, @0.65, @1];
+    cka2.repeatCount = 2;
+    cka2.duration = 1.8;
     self.pointShadowLayer.hidden = NO;
-    [self.pointShadowLayer addAnimation:ai2 forKey:@"ai2"];
+    [self.pointShadowLayer addAnimation:cka2 forKey:@"cka2"];
 }
 
 - (void)closeAnimation
 {
-    [self.pointLayer removeAnimationForKey:@"ai"];
-    [self.pointShadowLayer removeAnimationForKey:@"ai2"];
+    [self.pointLayer removeAnimationForKey:@"cka"];
+    [self.pointShadowLayer removeAnimationForKey:@"cka2"];
     self.pointShadowLayer.hidden = YES;
 }
 
