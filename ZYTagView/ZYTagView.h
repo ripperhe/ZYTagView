@@ -1,18 +1,33 @@
 //
 //  ZYTagView.h
-//  ImageTag
+//  ZYTagViewDemo
 //
-//  Created by ripper on 2016/9/27.
+//  Created by ripper on 2016/9/28.
 //  Copyright © 2016年 ripper. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 #import "ZYTagInfo.h"
+@class ZYTagView;
+
+@protocol ZYTagViewDelegate <NSObject>
+
+/** 触发轻触手势 */
+- (void)tagViewActiveTapGesture:(ZYTagView *)tagView;
+/** 触发长按手势 */
+- (void)tagViewActiveLongPressGesture:(ZYTagView *)tagView;
+
+@end
 
 @interface ZYTagView : UIView
 
+/** 代理 */
+@property (nonatomic, weak) id<ZYTagViewDelegate> delegate;
 /** 标记信息 */
 @property (nonatomic, strong, readonly) ZYTagInfo *tagInfo;
+/** 是否可编辑 default is YES */
+@property (nonatomic, assign) BOOL isEditEnabled;
+
 
 /** 初始化 */
 - (instancetype)initWithTagInfo:(ZYTagInfo *)tagInfo;
@@ -24,7 +39,7 @@
 - (void)removeAnimation;
 /** 显示删除按钮 */
 - (void)showDeleteBtn;
-/** 关闭删除按钮 */
+/** 隐藏删除按钮 */
 - (void)hiddenDeleteBtn;
 /** 切换删除按钮状态 */
 - (void)switchDeleteState;

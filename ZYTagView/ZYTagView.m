@@ -1,8 +1,8 @@
 //
 //  ZYTagView.m
-//  ImageTag
+//  ZYTagViewDemo
 //
-//  Created by ripper on 2016/9/27.
+//  Created by ripper on 2016/9/28.
 //  Copyright © 2016年 ripper. All rights reserved.
 //
 
@@ -60,6 +60,8 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     if (self) {
         
         self.tagInfo = tagInfo;
+        self.isEditEnabled = YES;
+        
         //子控件
         [self createSubviews];
         //手势处理
@@ -134,11 +136,11 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
     [self addGestureRecognizer:tap];
     
-    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
-    [self addGestureRecognizer:pan];
-    
     UILongPressGestureRecognizer *lop = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self addGestureRecognizer:lop];
+
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
+    [self addGestureRecognizer:pan];
 }
 
 - (void)layoutWithTitle:(NSString *)title superview:(UIView *)superview
@@ -279,7 +281,9 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 
 - (void)changeLocationWithGestureState:(UIGestureRecognizerState)gestureState locationPoint:(CGPoint)point
 {
-    
+    if (self.isEditEnabled == NO) {
+        return;
+    }
     if (self.state == ZYTagViewStateArrowLeft) {
         CGFloat referenceX = point.x;
         if (referenceX < kXSpace) {
@@ -292,8 +296,8 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
                 self.zy_x = self.superview.zy_width - kXSpace - kPointWidth;
             }
             //翻转
-            if (gestureState == UIGestureRecognizerStateEnded) {
-                [self layoutSubviewsWithState:ZYTagViewStateArrowRight arrowPoint:CGPointMake(self.zy_x + kPointWidth/2.0, self.zy_centerY)];
+            if (gestureState == UIGestureRecognizerStateEnded && self.arrowPoint.x > self.superview.zy_width / 2.0) {
+                [self layoutSubviewsWithState:ZYTagViewStateArrowRight arrowPoint:self.arrowPoint];
             }
         }else{
             self.zy_x = referenceX;
@@ -314,8 +318,8 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
                 }
             }
             //翻转
-            if (gestureState == UIGestureRecognizerStateEnded) {
-                [self layoutSubviewsWithState:ZYTagViewStateArrowLeft arrowPoint:CGPointMake(self.zy_right - kPointWidth/2.0, self.zy_centerY)];
+            if (gestureState == UIGestureRecognizerStateEnded && self.arrowPoint.x < self.superview.zy_width / 2.0) {
+                [self layoutSubviewsWithState:ZYTagViewStateArrowLeft arrowPoint:self.arrowPoint];
             }
             
         }else if (referenceX > self.superview.zy_width - kXSpace - self.zy_width) {
@@ -362,8 +366,26 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 - (void)handleTapGesture:(UITapGestureRecognizer *)tap
 {
     if (tap.state == UIGestureRecognizerStateEnded) {
-        [self switchDeleteState];
         [self.superview bringSubviewToFront:self];
+        if ([self.delegate respondsToSelector:@selector(tagViewActiveTapGesture:)]) {
+            [self.delegate tagViewActiveTapGesture:self];
+        }else{
+            //默认 切换删除按钮状态
+            [self switchDeleteState];
+        }
+    }
+}
+
+- (void)handleLongPressGesture:(UILongPressGestureRecognizer *)lop
+{
+    if (lop.state == UIGestureRecognizerStateBegan) {
+        [self.superview bringSubviewToFront:self];
+        if ([self.delegate respondsToSelector:@selector(tagViewActiveLongPressGesture:)]) {
+            [self.delegate tagViewActiveLongPressGesture:self];
+        }else{
+            //默认 显示删除按钮
+            [self showDeleteBtn];
+        }
     }
 }
 
@@ -394,14 +416,6 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
             break;
         default:
             break;
-    }
-}
-
-- (void)handleLongPressGesture:(UILongPressGestureRecognizer *)lop
-{
-    if (lop.state == UIGestureRecognizerStateBegan) {
-        [self showDeleteBtn];
-        [self.superview bringSubviewToFront:self];
     }
 }
 
@@ -443,6 +457,9 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 
 - (void)showDeleteBtn
 {
+    if (self.isEditEnabled == NO) {
+        return;
+    }
     if (self.state == ZYTagViewStateArrowLeft) {
         [self layoutSubviewsWithState:ZYTagViewStateArrowLeftWithDelete arrowPoint:self.arrowPoint];
     }else if (self.state == ZYTagViewStateArrowRight) {
