@@ -12,8 +12,11 @@
 
 @protocol ZYTagImageViewDelegate <NSObject>
 
+/** 轻触imageView空白区域 */
 - (void)tagImageView:(ZYTagImageView *)tagImageView activeTapGesture:(UITapGestureRecognizer *)tapGesture;
+/** 轻触标签 */
 - (void)tagImageView:(ZYTagImageView *)tagImageView tagViewActiveTapGesture:(ZYTagView *)tagView;
+/** 长按标签 */
 - (void)tagImageView:(ZYTagImageView *)tagImageView tagViewActiveLongPressGesture:(ZYTagView *)tagView;
 
 @end
