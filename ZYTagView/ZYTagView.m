@@ -382,9 +382,6 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         [self.superview bringSubviewToFront:self];
         if ([self.delegate respondsToSelector:@selector(tagViewActiveLongPressGesture:)]) {
             [self.delegate tagViewActiveLongPressGesture:self];
-        }else{
-            //默认 显示删除按钮
-            [self showDeleteBtn];
         }
     }
 }
@@ -427,6 +424,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 #pragma mark - public methods
 - (void)updateTitle:(NSString *)title
 {
+    self.tagInfo.title = title;
     [self layoutWithTitle:title superview:self.superview];
 }
 
