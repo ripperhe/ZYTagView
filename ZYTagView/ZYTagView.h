@@ -12,6 +12,7 @@
 
 @protocol ZYTagViewDelegate <NSObject>
 
+@optional
 /** 触发轻触手势 */
 - (void)tagViewActiveTapGesture:(ZYTagView *)tagView;
 /** 触发长按手势 */
