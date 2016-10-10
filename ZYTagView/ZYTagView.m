@@ -116,6 +116,10 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 {
     CAShapeLayer *backLayer = [[CAShapeLayer alloc] init];
     backLayer.fillColor = [[UIColor blackColor] colorWithAlphaComponent:.7].CGColor;
+    backLayer.shadowOffset = CGSizeMake(0, 2);
+    backLayer.shadowColor = [UIColor blackColor].CGColor;
+    backLayer.shadowRadius = 3;
+    backLayer.shadowOpacity = 0.5;
     [self.layer addSublayer:backLayer];
     self.backLayer = backLayer;
     
@@ -127,6 +131,10 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 
     CAShapeLayer *pointLayer = [[CAShapeLayer alloc] init];
     pointLayer.backgroundColor =[UIColor whiteColor].CGColor;
+    pointLayer.shadowOffset = CGSizeMake(0, 1);
+    pointLayer.shadowColor = [UIColor blackColor].CGColor;
+    pointLayer.shadowRadius = 1.5;
+    pointLayer.shadowOpacity = 0.2;
     [self.layer addSublayer:pointLayer];
     self.pointLayer = pointLayer;
     
