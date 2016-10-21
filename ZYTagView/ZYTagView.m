@@ -179,25 +179,29 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     
     //调整子控件UI
     ZYTagViewState state = self.state;
-    if (!CGPointEqualToPoint(self.tagInfo.point, CGPointZero)) {
-        //如果有point,则利用point
-        if (self.tagInfo.point.x < superview.zy_width / 2.0) {
-            state = ZYTagViewStateArrowLeft;
-        }else{
-            state = ZYTagViewStateArrowRight;
-        }
-        [self layoutSubviewsWithState:state arrowPoint:self.tagInfo.point];
-    }else{
+    CGPoint point = self.tagInfo.point;
+    
+    if (CGPointEqualToPoint(self.tagInfo.point, CGPointZero)) {
         //没有point,利用位置比例proportion
         CGFloat x = superview.zy_width * self.tagInfo.proportion.x;
         CGFloat y = superview.zy_height * self.tagInfo.proportion.y;
-        if (self.tagInfo.proportion.x < 0.5) {
+        point = CGPointMake(x, y);
+    }
+    
+    if (self.tagInfo.direction == ZYTagDirectionNormal) {
+        if (point.x < superview.zy_width / 2.0) {
             state = ZYTagViewStateArrowLeft;
         }else{
             state = ZYTagViewStateArrowRight;
         }
-        [self layoutSubviewsWithState:state arrowPoint:CGPointMake(x, y)];
+    }else{
+        if (self.tagInfo.direction == ZYTagDirectionLeft) {
+            state = ZYTagViewStateArrowLeft;
+        }else{
+            state = ZYTagViewStateArrowRight;
+        }
     }
+    [self layoutSubviewsWithState:state arrowPoint:self.tagInfo.point];
     
     //处理特殊初始点情况
     if (state == ZYTagViewStateArrowLeft) {
@@ -373,11 +377,13 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         //被移除的时候也会调用 willMoveToSuperview
         return;
     }
-    //更新point
+    //更新point 以及 direction
     if (self.state == ZYTagViewStateArrowLeft || self.state == ZYTagViewStateArrowLeftWithDelete) {
         self.tagInfo.point = CGPointMake(self.zy_x + kPointWidth / 2, self.zy_y + self.zy_height / 2.0);
+        self.tagInfo.direction = ZYTagDirectionLeft;
     }else{
         self.tagInfo.point = CGPointMake(self.zy_right - kPointWidth / 2, self.zy_y + self.zy_height / 2.0);
+        self.tagInfo.direction = ZYTagDirectionRight;
     }
     //更新proportion
     if (superview.zy_width > 0 && superview.zy_height > 0) {
