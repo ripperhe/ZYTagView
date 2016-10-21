@@ -201,7 +201,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
             state = ZYTagViewStateArrowRight;
         }
     }
-    [self layoutSubviewsWithState:state arrowPoint:self.tagInfo.point];
+    [self layoutSubviewsWithState:state arrowPoint:point];
     
     //处理特殊初始点情况
     if (state == ZYTagViewStateArrowLeft) {
