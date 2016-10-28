@@ -22,6 +22,18 @@ typedef NS_OPTIONS(NSUInteger, ZYBorder) {
     ZYBorderAll    = ~0UL
 };
 
+/**
+ *  圆角类型设置
+ */
+typedef NS_OPTIONS(NSUInteger, ZYCorner) {
+    ZYCornerLeft,
+    ZYCornerRight,
+    ZYCornerTop,
+    ZYCornerBottom,
+    ZYCornerAll,
+};
+
+
 @interface UIView (zy_Frame)
 
 /** origin、size */
@@ -43,18 +55,9 @@ typedef NS_OPTIONS(NSUInteger, ZYBorder) {
 
 /** 获取控制器 */
 - (UIViewController *)zy_viewController;
-/** 根据点移动 */
-- (void)moveByPoint:(CGPoint)delta;
-/** 放大倍数 */
-- (void)magnifyByScale:(CGFloat)scaleFactor;
-/** 适配某一个尺寸 */
-- (void)fitInSize:(CGSize)size;
 /** 利用mask设置圆角 */
-- (void)setCornerOnTop:(CGFloat) conner;
-- (void)setCornerOnBottom:(CGFloat) conner;
-- (void)setCornerOnLeft:(CGFloat) conner;
-- (void)setCornerOnRight:(CGFloat) conner;
+- (void)zy_setCornerWithType:(ZYCorner)cornerType cornerRadius:(CGFloat)radius;
 /** 边框 设置好frame再设置边框 */
-- (void)setBorders:(ZYBorder)Borders color:(UIColor*) color width:(CGFloat) width;
+- (void)zy_setBorders:(ZYBorder)Borders color:(UIColor*) color width:(CGFloat) width;
 
 @end
