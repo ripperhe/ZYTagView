@@ -1,5 +1,5 @@
 //
-//  UIView+zy_Frame.h
+//  UIView+ZYTagView.h
 //  ZYCategory
 //
 //  Created by ripper on 16/4/30.
@@ -34,7 +34,7 @@ typedef NS_OPTIONS(NSUInteger, ZYCorner) {
 };
 
 
-@interface UIView (zy_Frame)
+@interface UIView (ZYTagView)
 
 /** origin、size */
 @property CGPoint zy_origin;

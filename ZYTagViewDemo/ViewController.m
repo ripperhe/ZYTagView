@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import "UIView+zy_Frame.h"
+#import "UIView+ZYTagView.h"
 #import "ZYTagImageView.h"
 
 @interface ViewController ()<ZYTagImageViewDelegate>

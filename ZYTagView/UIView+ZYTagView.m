@@ -1,12 +1,12 @@
 //
-//  UIView+zy_Frame.m
+//  UIView+ZYTagView.m
 //  ZYCategory
 //
 //  Created by ripper on 16/4/30.
 //  Copyright © 2016年 ripper. All rights reserved.
 //
 
-#import "UIView+zy_Frame.h"
+#import "UIView+ZYTagView.h"
 #import <objc/runtime.h>
 
 const char *zy_leftBorderKey = "zy_leftBorderKey";
@@ -14,7 +14,7 @@ const char *zy_rightBorderKey = "zy_rightBorderKey";
 const char *zy_topBorderKey = "zy_topBorderKey";
 const char *zy_bottomBorderKey = "zy_bottomBorderKey";
 
-@implementation UIView (zy_Frame)
+@implementation UIView (ZYTagView)
 
 #pragma mark - origin、size
 - (CGPoint)zy_origin

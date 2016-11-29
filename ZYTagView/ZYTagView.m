@@ -7,7 +7,7 @@
 //
 
 #import "ZYTagView.h"
-#import "UIView+zy_Frame.h"
+#import "UIView+ZYTagView.h"
 
 #define kXSpace 8.0                              /** 距离父视图边界横向最小距离 */
 #define kYSpace 0.0                              /** 距离俯视图边界纵向最小距离 */
