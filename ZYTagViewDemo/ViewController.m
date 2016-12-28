@@ -33,7 +33,7 @@
     [self.view addSubview:imageView];
     self.imageView = imageView;
     
-    //添加标签
+    // 添加标签
     ZYTagInfo *info1 = [ZYTagInfo tagInfo];
     info1.point = CGPointMake(30, 40);
     info1.title = @"我是一个标签";
@@ -48,7 +48,7 @@
     
     [imageView addTagsWithTagInfoArray:@[info1, info2, info3]];
     
-    //清除标签 恢复标签
+    // 清除标签 恢复标签
     UIButton *clearButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [clearButton setTitle:@"清除标签" forState:UIControlStateNormal];
     [clearButton setTitle:@"恢复标签" forState:UIControlStateSelected];
@@ -58,7 +58,7 @@
     clearButton.zy_y = imageView.zy_bottom + 10;
     [self.view addSubview:clearButton];
     
-    //浏览模式 编辑模式
+    // 浏览模式 编辑模式
     UIButton *editButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [editButton setTitle:@"浏览模式" forState:UIControlStateNormal];
     [editButton setTitle:@"编辑模式" forState:UIControlStateSelected];
@@ -101,7 +101,7 @@
     UIAlertAction *ac = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         NSString *text = ((UITextField *)(alVC.textFields[0])).text;
         if (text.length) {
-            //添加标签
+            // 添加标签
             [tagImageView addTagWithTitle:text point:tapPoint object:nil];
         }
     }];

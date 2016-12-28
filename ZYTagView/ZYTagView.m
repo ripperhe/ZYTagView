@@ -63,9 +63,9 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         self.tagInfo = tagInfo;
         self.isEditEnabled = YES;
         
-        //子控件
+        // 子控件
         [self createSubviews];
-        //手势处理
+        // 手势处理
         [self setupGesture];
     }
     return self;
@@ -76,7 +76,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 {
     [super willMoveToSuperview:newSuperview];
     
-    //调整UI
+    // 调整UI
     [self layoutWithTitle:self.tagInfo.title superview:newSuperview];
 }
 
@@ -168,7 +168,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 
 - (void)layoutWithTitle:(NSString *)title superview:(UIView *)superview
 {
-    //调整label的大小
+    // 调整label的大小
     self.titleLabel.font = [UIFont systemFontOfSize:12];
     self.titleLabel.textColor = [UIColor whiteColor];
     self.titleLabel.text = title;
@@ -177,12 +177,12 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     self.titleLabel.zy_width += kTagHorizontalSpace;
     self.titleLabel.zy_height += kTagVerticalSpace;
     
-    //调整子控件UI
+    // 调整子控件UI
     ZYTagViewState state = self.state;
     CGPoint point = self.tagInfo.point;
     
     if (CGPointEqualToPoint(self.tagInfo.point, CGPointZero)) {
-        //没有point,利用位置比例proportion
+        // 没有point,利用位置比例proportion
         CGFloat x = superview.zy_width * self.tagInfo.proportion.x;
         CGFloat y = superview.zy_height * self.tagInfo.proportion.y;
         point = CGPointMake(x, y);
@@ -203,7 +203,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     }
     [self layoutSubviewsWithState:state arrowPoint:point];
     
-    //处理特殊初始点情况
+    // 处理特殊初始点情况
     if (state == ZYTagViewStateArrowLeft) {
         if (self.zy_x < kXSpace) {
             self.zy_x = kXSpace;
@@ -219,7 +219,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         self.zy_y = superview.zy_height - kYSpace - self.zy_height;
     }
     
-    //更新tag信息
+    // 更新tag信息
     [self updateLocationInfoWithSuperview:superview];
 }
 
@@ -227,7 +227,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 {
     self.state = state;
 
-    //利用事务关闭隐式动画
+    // 利用事务关闭隐式动画
     [CATransaction setDisableActions:YES];
 
     UIBezierPath *backPath = [UIBezierPath bezierPath];
@@ -239,23 +239,23 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 
     
     if (state == ZYTagViewStateArrowLeft || state == ZYTagViewStateArrowRight) {
-        //无关闭按钮
+        // 无关闭按钮
         self.zy_width = self.titleLabel.zy_width + kAngleLength + kPointWidth + kPointSpace;
-        //隐藏关闭及分割线
+        // 隐藏关闭及分割线
         self.deleteBtn.hidden = YES;
         self.cuttingLine.hidden = YES;
     }else{
-        //有关闭按钮
+        // 有关闭按钮
         self.zy_width = self.titleLabel.zy_width + kAngleLength + kPointWidth + kPointSpace +kDeleteBtnWidth;
-        //关闭按钮
+        // 关闭按钮
         self.deleteBtn.hidden = NO;
         self.cuttingLine.hidden = NO;
     }
 
     if (state == ZYTagViewStateArrowLeft || state == ZYTagViewStateArrowLeftWithDelete) {
-        //根据字调整控件大小
+        // 根据字调整控件大小
         self.zy_x = arrowPoint.x - kPointWidth / 2.0;
-        //背景
+        // 背景
         [backPath moveToPoint:CGPointMake(kPointWidth + kPointSpace, self.zy_height / 2.0)];
         [backPath addLineToPoint:CGPointMake(kPointWidth + kPointSpace + kAngleLength, 0)];
         [backPath addLineToPoint:CGPointMake(self.zy_width - kBackCornerRadius, 0)];
@@ -264,21 +264,21 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         [backPath addArcWithCenter:CGPointMake(self.zy_width - kBackCornerRadius, self.zy_height - kBackCornerRadius) radius:kBackCornerRadius startAngle:0 endAngle:M_PI_2 clockwise:YES];
         [backPath addLineToPoint:CGPointMake(kPointWidth + kPointSpace + kAngleLength, self.zy_height)];
         [backPath closePath];
-        //点
+        // 点
         self.pointLayer.position = CGPointMake(kPointWidth / 2.0, self.zy_height / 2.0);
-        //标签
+        // 标签
         self.titleLabel.zy_x = kPointWidth + kAngleLength;
 
         if (state == ZYTagViewStateArrowLeftWithDelete) {
-            //关闭
+            // 关闭
             self.deleteBtn.frame = CGRectMake(self.zy_width - kDeleteBtnWidth, 0, kDeleteBtnWidth, kDeleteBtnWidth);
             self.cuttingLine.frame = CGRectMake(self.deleteBtn.zy_x - 0.5, 0, 0.5, self.zy_height);
         }
         
     }else if(state == ZYTagViewStateArrowRight || state == ZYTagViewStateArrowRightWithDelete) {
-        //根据字调整控件大小
+        // 根据字调整控件大小
         self.zy_right = arrowPoint.x + kPointWidth / 2.0;
-        //背景
+        // 背景
         [backPath moveToPoint:CGPointMake(self.zy_width - kPointWidth - kPointSpace, self.zy_height / 2.0)];
         [backPath addLineToPoint:CGPointMake(self.zy_width - kAngleLength - kPointWidth - kPointSpace, self.zy_height)];
         [backPath addLineToPoint:CGPointMake(kBackCornerRadius, self.zy_height)];
@@ -287,16 +287,16 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         [backPath addArcWithCenter:CGPointMake(kBackCornerRadius, kBackCornerRadius) radius:kBackCornerRadius startAngle:M_PI endAngle:M_PI + M_PI_2 clockwise:YES];
         [backPath addLineToPoint:CGPointMake(self.zy_width - kAngleLength - kPointWidth - kPointSpace, 0)];
         [backPath closePath];
-        //点
+        // 点
         self.pointLayer.position = CGPointMake(self.zy_width - kPointWidth / 2.0, self.zy_height / 2.0);
 
         if (state == ZYTagViewStateArrowRight) {
-            //标签
+            // 标签
             self.titleLabel.zy_x = 0;
         }else{
-            //标签
+            // 标签
             self.titleLabel.zy_x = kDeleteBtnWidth;
-            //关闭
+            // 关闭
             self.deleteBtn.frame = CGRectMake(0, 0, kDeleteBtnWidth, kDeleteBtnWidth);
             self.cuttingLine.frame = CGRectMake(self.deleteBtn.zy_right + 0.5, 0, 0.5, self.zy_height);
         }
@@ -341,11 +341,11 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
     }else if (referencePoint.y > self.superview.zy_height - kYSpace - self.zy_height / 2.0){
         referencePoint.y = self.superview.zy_height - kYSpace - self.zy_height / 2.0;
     }
-    //更新位置
+    // 更新位置
     self.arrowPoint = referencePoint;
     
     if (gestureState == UIGestureRecognizerStateEnded) {
-        //翻转
+        // 翻转
         switch (self.state) {
             case ZYTagViewStateArrowLeft:
             case ZYTagViewStateArrowLeftWithDelete:
@@ -366,7 +366,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
             default:
                 break;
         }
-        //更新tag信息
+        // 更新tag信息
         [self updateLocationInfoWithSuperview:self.superview];
     }
 }
@@ -374,10 +374,10 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
 - (void)updateLocationInfoWithSuperview:(UIView *)superview
 {
     if (superview == nil) {
-        //被移除的时候也会调用 willMoveToSuperview
+        // 被移除的时候也会调用 willMoveToSuperview
         return;
     }
-    //更新point 以及 direction
+    // 更新point 以及 direction
     if (self.state == ZYTagViewStateArrowLeft || self.state == ZYTagViewStateArrowLeftWithDelete) {
         self.tagInfo.point = CGPointMake(self.zy_x + kPointWidth / 2, self.zy_y + self.zy_height / 2.0);
         self.tagInfo.direction = ZYTagDirectionLeft;
@@ -385,7 +385,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         self.tagInfo.point = CGPointMake(self.zy_right - kPointWidth / 2, self.zy_y + self.zy_height / 2.0);
         self.tagInfo.direction = ZYTagDirectionRight;
     }
-    //更新proportion
+    // 更新proportion
     if (superview.zy_width > 0 && superview.zy_height > 0) {
         self.tagInfo.proportion = ZYPositionProportionMake(self.tagInfo.point.x / superview.zy_width, self.tagInfo.point.y / superview.zy_height);
     }
@@ -399,7 +399,7 @@ typedef NS_ENUM(NSUInteger, ZYTagViewState) {
         if ([self.delegate respondsToSelector:@selector(tagViewActiveTapGesture:)]) {
             [self.delegate tagViewActiveTapGesture:self];
         }else{
-            //默认 切换删除按钮状态
+            // 默认 切换删除按钮状态
             [self switchDeleteState];
         }
     }

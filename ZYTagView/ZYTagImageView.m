@@ -136,7 +136,7 @@
     if ([self.delegate respondsToSelector:@selector(tagImageView:tagViewActiveTapGesture:)]) {
         [self.delegate tagImageView:self tagViewActiveTapGesture:tagView];
     }else{
-        //默认
+        // 默认
         [tagView switchDeleteState];
     }
 }
