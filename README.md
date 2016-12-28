@@ -3,7 +3,7 @@
 
 >公司的项目需要这个功能，写了之后顺便提取出来写了一个demo,简单实现图片添加标签,暂时没有去处理图片宽度小于标签长度的情况。			
 
-![](https://raw.githubusercontent.com/ripperhe/ZYTagView/master/image/look.gif)
+![](https://raw.githubusercontent.com/ripperhe/Resource/master/20161228/tagview.gif)
 
 类似微博的图片添加标签分为两种状态，一种是编辑标签状态，另一种是微博发出之后浏览其他人添加的标签的浏览状态。
 
