@@ -14,8 +14,6 @@
 		C95250EB1D9C00BE00B406F0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C95250E91D9C00BE00B406F0 /* Main.storyboard */; };
 		C95250ED1D9C00BE00B406F0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C95250EC1D9C00BE00B406F0 /* Assets.xcassets */; };
 		C95250F01D9C00BE00B406F0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C95250EE1D9C00BE00B406F0 /* LaunchScreen.storyboard */; };
-		C95250FB1D9C00BE00B406F0 /* ZYTagViewDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C95250FA1D9C00BE00B406F0 /* ZYTagViewDemoTests.m */; };
-		C95251061D9C00BE00B406F0 /* ZYTagViewDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C95251051D9C00BE00B406F0 /* ZYTagViewDemoUITests.m */; };
 		C952511B1D9C014900B406F0 /* ZYTagInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = C95251171D9C014900B406F0 /* ZYTagInfo.m */; };
 		C952511C1D9C014900B406F0 /* ZYTagView.m in Sources */ = {isa = PBXBuildFile; fileRef = C95251191D9C014900B406F0 /* ZYTagView.m */; };
 		C952511F1D9C01EC00B406F0 /* X@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C952511D1D9C01EC00B406F0 /* X@2x.png */; };
@@ -55,11 +53,7 @@
 		C95250EF1D9C00BE00B406F0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C95250F11D9C00BE00B406F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C95250F61D9C00BE00B406F0 /* ZYTagViewDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZYTagViewDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C95250FA1D9C00BE00B406F0 /* ZYTagViewDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZYTagViewDemoTests.m; sourceTree = "<group>"; };
-		C95250FC1D9C00BE00B406F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C95251011D9C00BE00B406F0 /* ZYTagViewDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZYTagViewDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C95251051D9C00BE00B406F0 /* ZYTagViewDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZYTagViewDemoUITests.m; sourceTree = "<group>"; };
-		C95251071D9C00BE00B406F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C95251161D9C014900B406F0 /* ZYTagInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZYTagInfo.h; sourceTree = "<group>"; };
 		C95251171D9C014900B406F0 /* ZYTagInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZYTagInfo.m; sourceTree = "<group>"; };
 		C95251181D9C014900B406F0 /* ZYTagView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZYTagView.h; sourceTree = "<group>"; };
@@ -101,8 +95,6 @@
 			children = (
 				C95251131D9C012600B406F0 /* ZYTagView */,
 				C95250DF1D9C00BE00B406F0 /* ZYTagViewDemo */,
-				C95250F91D9C00BE00B406F0 /* ZYTagViewDemoTests */,
-				C95251041D9C00BE00B406F0 /* ZYTagViewDemoUITests */,
 				C95250DE1D9C00BE00B406F0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -140,24 +132,6 @@
 				C95250E11D9C00BE00B406F0 /* main.m */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		C95250F91D9C00BE00B406F0 /* ZYTagViewDemoTests */ = {
-			isa = PBXGroup;
-			children = (
-				C95250FA1D9C00BE00B406F0 /* ZYTagViewDemoTests.m */,
-				C95250FC1D9C00BE00B406F0 /* Info.plist */,
-			);
-			path = ZYTagViewDemoTests;
-			sourceTree = "<group>";
-		};
-		C95251041D9C00BE00B406F0 /* ZYTagViewDemoUITests */ = {
-			isa = PBXGroup;
-			children = (
-				C95251051D9C00BE00B406F0 /* ZYTagViewDemoUITests.m */,
-				C95251071D9C00BE00B406F0 /* Info.plist */,
-			);
-			path = ZYTagViewDemoUITests;
 			sourceTree = "<group>";
 		};
 		C95251131D9C012600B406F0 /* ZYTagView */ = {
@@ -327,7 +301,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C95250FB1D9C00BE00B406F0 /* ZYTagViewDemoTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -335,7 +308,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C95251061D9C00BE00B406F0 /* ZYTagViewDemoUITests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
