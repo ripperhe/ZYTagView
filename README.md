@@ -4,7 +4,7 @@
 
 ## 效果图
 
-![](https://raw.githubusercontent.com/ripperhe/Resource/master/20161228/tagview.gif)
+![](https://raw.githubusercontent.com/ripperhe/oss/master/2016/1228/tagview.gif)
 
 ## 类介绍
 
